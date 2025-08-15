@@ -9,10 +9,10 @@ interface Props {
 const TodoList: React.FC<Props> = ({ todos, setTodos }) => {
   return (
     <div className="todos">
-      {todos.map((todos) => (
+      {todos.map((todo) => (
         <SingleTodo
           todo={todo}
-          key={todos.id}
+          key={todo.id}
           todos={todos}
           setTodos={setTodos}
         />
