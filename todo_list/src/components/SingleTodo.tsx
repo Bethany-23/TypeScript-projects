@@ -15,12 +15,14 @@ type Props = {
 const SingleTodo: React.FC<Props> = ({ todo, todos, setTodos }) => {
   const [edit, setEdit] = useState<boolean>(false);
   const [editTodo, setEditTodo] = useState<string>(todo.todo);
+
+  // Draggable setup
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: todo.id.toString(),
   });
 
   const style = {
-    transform: CSS.Translate.toString(transform),
+    transform: CSS.Transform.toString(transform),
   };
 
   const handleDone = (id: number) => {
@@ -37,36 +39,34 @@ const SingleTodo: React.FC<Props> = ({ todo, todos, setTodos }) => {
 
   const handleEdit = (e: React.FormEvent, id: number) => {
     e.preventDefault();
-
     setTodos(
-      todos.map(() => (todo.id === id ? { ...todo, todo: editTodo } : todo))
+      todos.map((t) => (t.id === id ? { ...t, todo: editTodo } : t))
     );
-    setEdit(false)
+    setEdit(false);
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(()=>{
+  useEffect(() => {
     inputRef.current?.focus();
-  },[edit]);
+  }, [edit]);
 
   return (
-      <div
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      className="todo__single"
-    >
     <form
       className="todo__single"
-      onSubmit={(e) => {
-        handleEdit(e, todo.id);
-      }}
+      onSubmit={(e) => handleEdit(e, todo.id)}
+      ref={setNodeRef} // Attach draggable ref here
+      style={style}
     >
+      {/* Drag handle */}
+      <div className="drag-handle" {...listeners} {...attributes}>
+        ☰
+      </div>
+
+      {/* Todo text */}
       {edit ? (
         <input
-          ref= {inputRef}
+          ref={inputRef}
           value={editTodo}
           onChange={(e) => setEditTodo(e.target.value)}
           className="todos__single--text"
@@ -76,37 +76,25 @@ const SingleTodo: React.FC<Props> = ({ todo, todos, setTodos }) => {
       ) : (
         <span className="todos__single--text">{todo.todo}</span>
       )}
-      ;
-      <div>
+
+      {/* Action buttons */}
+      <div className="todo__actions">
         <span
           className="icon"
           onClick={() => {
-            if (!edit && !todo.isDone) {
-              setEdit(!edit);
-            }
+            if (!edit && !todo.isDone) setEdit(!edit);
           }}
         >
           <AiFillEdit />
         </span>
-        <span
-          className="icon"
-          onClick={() => {
-            handleDelete(todo.id);
-          }}
-        >
+        <span className="icon" onClick={() => handleDelete(todo.id)}>
           <AiFillDelete />
         </span>
-        <span
-          className="icon"
-          onClick={() => {
-            handleDone(todo.id);
-          }}
-        >
+        <span className="icon" onClick={() => handleDone(todo.id)}>
           <MdOutlineDone />
         </span>
       </div>
     </form>
-    </div>
   );
 };
 

@@ -68,6 +68,20 @@
 .dragcomplete {
   background-color: rgb(255, 38, 0);
 }
+.drag-handle {
+  cursor: grab;
+  padding: 0 8px;
+  display: inline-block;
+  font-size: 1.2rem;
+  user-select: none; /* Prevent text selection when dragging */
+}
+
+.todo__single {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 
 .remove {
   background-color: rgb(235, 103, 80);
