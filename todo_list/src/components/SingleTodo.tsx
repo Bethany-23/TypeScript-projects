@@ -2,7 +2,9 @@ import type { Todo } from "../models";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import { MdOutlineDone } from "react-icons/md";
 import "./styles.css";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
 
 type Props = {
   todo: Todo;
@@ -13,6 +15,13 @@ type Props = {
 const SingleTodo: React.FC<Props> = ({ todo, todos, setTodos }) => {
   const [edit, setEdit] = useState<boolean>(false);
   const [editTodo, setEditTodo] = useState<string>(todo.todo);
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: todo.id.toString(),
+  });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+  };
 
   const handleDone = (id: number) => {
     setTodos(
@@ -35,7 +44,20 @@ const SingleTodo: React.FC<Props> = ({ todo, todos, setTodos }) => {
     setEdit(false)
   };
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(()=>{
+    inputRef.current?.focus();
+  },[edit]);
+
   return (
+      <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className="todo__single"
+    >
     <form
       className="todo__single"
       onSubmit={(e) => {
@@ -44,6 +66,7 @@ const SingleTodo: React.FC<Props> = ({ todo, todos, setTodos }) => {
     >
       {edit ? (
         <input
+          ref= {inputRef}
           value={editTodo}
           onChange={(e) => setEditTodo(e.target.value)}
           className="todos__single--text"
@@ -83,6 +106,7 @@ const SingleTodo: React.FC<Props> = ({ todo, todos, setTodos }) => {
         </span>
       </div>
     </form>
+    </div>
   );
 };
 
